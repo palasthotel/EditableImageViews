@@ -1,13 +1,6 @@
-*.iml
-.gradle
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-
 
 # Created by https://www.gitignore.io/api/androidstudio
 
@@ -45,6 +38,7 @@ proguard/
 
 # Log Files
 *.log
+
 
 # Android Studio
 /*/build/
@@ -93,7 +87,7 @@ obj/
 .idea/uiDesigner.xml
 
 # OS-specific files
-.DS_Store
+*.DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
@@ -137,3 +131,11 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.gitignore.io/api/androidstudio
+
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
