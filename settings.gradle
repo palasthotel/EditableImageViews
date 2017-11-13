@@ -1,1 +1,1 @@
-include ':app', ':editableimageview'
+include ':app', ':cropimageview', ':blurimageview'
