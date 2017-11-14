@@ -5,7 +5,6 @@ import android.graphics.Matrix
 import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
-import android.util.Log
 
 
 /**
@@ -48,12 +47,11 @@ class BitmapBounds(imageview: BlurImageView){
 			left = ((imageview.width - drawWidth)/2).toInt()
 			right = (left + drawWidth).toInt()
 		}
-		Log.d("BitmapBounds", "Draw: top ${top} right ${right} bottom ${bottom} left ${left}")
 	}
 	
-	fun isInBounds(point: PointF): Boolean{
-		return point.x <= right && point.x >= left
-			&& point.y <= bottom && point.y >= top
+	fun isInBounds(point: PointF, offset: Int = 0): Boolean{
+		return point.x <= right - offset && point.x >= left + offset
+			&& point.y <= bottom - offset && point.y >= top + offset
 	}
 	
 	fun resize(bm: Bitmap): Bitmap{

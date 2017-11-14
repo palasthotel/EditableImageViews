@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.ImageView
@@ -18,24 +17,22 @@ class BlurImageView @JvmOverloads constructor(
 	defStyleRes: Int = 0) :
 	ImageView(context, attrs, defStyle, defStyleRes), GestureCallback {
 	
-	private val paint = Paint()
+	val blurPreviewPaint = Paint()
 	
+	// private variables
 	private var scrollDetector: GestureDetector = GestureDetector(context, GestureListener(this))
-	
-	private var lines: ArrayList<BlurLine> = ArrayList()
-	
 	private val bitmap
 		get() = (drawable as BitmapDrawable).bitmap
+	
 	private var _bitmapBlurred: Bitmap? = null
 	private val bitmapBlurred: Bitmap
-		get(){
-			if(_bitmapBlurred == null){
-				_bitmapBlurred = Bitmap.createBitmap(bitmap, 0, 1, bitmap.width, bitmap.height-1)
+		get() {
+			if (_bitmapBlurred == null) {
+				_bitmapBlurred = Bitmap.createBitmap(bitmap, 0, 1, bitmap.width, bitmap.height - 1)
 //				_bitmapBlurred = Gausianize(context, _bitmapBlurred).make()
 				_bitmapBlurred = bitmapBounds.resize(_bitmapBlurred!!)
 				Pixelate(_bitmapBlurred!!).setDensity(100)
-					.setListener{
-						bitmap, _ ->
+					.setListener { bitmap, _ ->
 						_bitmapBlurred = bitmap
 					}
 					.make()
@@ -48,54 +45,71 @@ class BlurImageView @JvmOverloads constructor(
 	private var _bitmapBounds: BitmapBounds? = null
 	private val bitmapBounds: BitmapBounds
 		get() {
-			if(_bitmapBounds == null){
+			if (_bitmapBounds == null) {
 				_bitmapBounds = BitmapBounds(this)
 			}
 			return _bitmapBounds!!
 		}
 	
-	val scale: Float
-		get() =	(drawable as BitmapDrawable).bitmap.height.toFloat() / height
+	private var blurLineHeight: Float
+		get() = blurPreviewPaint.strokeWidth
+		set(value) {
+			blurPreviewPaint.strokeWidth = value
+		}
+	
+	private var lines: ArrayList<BlurLine> = ArrayList()
 	
 	init {
-		
 		scaleType = ImageView.ScaleType.FIT_CENTER
-		
-		paint.color = Color.BLACK
-		paint.strokeCap = Paint.Cap.ROUND
-		paint.strokeWidth = 40.0f
-		paint.style = Paint.Style.FILL_AND_STROKE
+		blurPreviewPaint.color = Color.BLACK
+//		blurPreviewPaint.strokeCap = Paint.Cap.ROUND
+		blurPreviewPaint.strokeWidth = 40.0f
+		blurPreviewPaint.style = Paint.Style.FILL_AND_STROKE
+		blurPreviewPaint.alpha = 100
 		isDrawingCacheEnabled = true
-		
-		//setLayerType(LAYER_TYPE_SOFTWARE, null);
-		
-//		mOverlayPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.MULTIPLY)
-//		mOverlayPaint.color = Color.RED
-//		mOverlayPaint.strokeWidth = 40.0f
-	
-	
 		
 	}
 	
 	override fun onDraw(canvas: Canvas) {
 		super.onDraw(canvas)
-		
 		bitmapBlurred
-		
 		lines.forEach {
-			if(it.hasBlurBitmap){
-				canvas.drawBitmap(it.blurBitmap, it.x + bitmapBounds.left, it.y + bitmapBounds.top, null)
+			if (it.hasBlurBitmap) {
+				canvas.drawBitmap(
+					it.blurBitmap,
+					it.x + bitmapBounds.left,
+					it.y + bitmapBounds.top - blurPreviewPaint.strokeWidth/2,
+					null
+				)
 			} else {
-				it.draw(canvas, paint)
+				it.draw(canvas, blurPreviewPaint)
 			}
 		}
-
 	}
+	
+	val canUndo: Boolean
+		get() = lines.size > 0
 	
 	fun undo() {
 		if (lines.size > 0) {
 			lines.removeAt(lines.size - 1)
 			invalidate()
+		}
+	}
+	
+	
+	fun setHistory(history: List<BlurLine>) {
+		lines.clear()
+		lines.addAll(history)
+		invalidate()
+	}
+	
+	fun getHistory(): List<BlurLine> {
+		return lines.map {
+			BlurLine(
+				it.p1,
+				it.p2
+			)
 		}
 	}
 	
@@ -107,29 +121,6 @@ class BlurImageView @JvmOverloads constructor(
 		return bitmap
 	}
 	
-	private fun getCoordsOnBitmap(e: MotionEvent): PointF{
-		val index = e.actionIndex
-		
-		val bitmap_width = scale * (drawable as BitmapDrawable).bitmap.width
-		
-		val offset_x = (width - bitmap_width) / 2
-		return PointF(
-			e.getX(index) - offset_x, e.getY(index)
-		)
-	}
-	
-	private fun bitmapToImageViewPoint(point: PointF): PointF{
-		return PointF(
-		
-		)
-	}
-	
-	private fun imageViewToBitmapPoint(point: PointF): PointF{
-		return PointF(
-			point.x * scale,
-			point.y * scale
-		)
-	}
 	
 	private fun getPointerCoords(e: MotionEvent): PointF {
 		val index = e.actionIndex
@@ -137,13 +128,45 @@ class BlurImageView @JvmOverloads constructor(
 	}
 	
 	override fun onTouchEvent(event: MotionEvent): Boolean {
-		when(event.action){
-			MotionEvent.ACTION_UP ->{
+		when (event.action) {
+			MotionEvent.ACTION_UP -> {
 				lines
 					.filter { !it.hasBlurBitmap }
 					.forEach {
-						it.blurBitmap = Bitmap.createBitmap(bitmapBlurred, it.x.toInt(), it.y.toInt(), it.width.toInt(), 30)
-				}
+						val saftyOffset = 5
+						var x = it.x.toInt()
+						var y = (it.y.toInt() - (blurPreviewPaint.strokeWidth / 2f)).toInt()
+						var width = it.width.toInt()
+						var height = blurPreviewPaint.strokeWidth.toInt()
+						
+						if(x+saftyOffset > bitmapBlurred.width){
+							x = bitmapBlurred.width - saftyOffset/2
+						} else if(x < 0){
+							x = saftyOffset/2
+						}
+						
+						if( x + width + saftyOffset > bitmapBlurred.width){
+							width = bitmapBlurred.width - x - saftyOffset
+						}
+						
+						if(y+ saftyOffset > bitmapBlurred.height){
+							y = bitmapBlurred.height - saftyOffset/2
+						} else if(y < 0){
+							y = saftyOffset/2
+						}
+						
+						if(y + height + saftyOffset > bitmapBlurred.height){
+							height = bitmapBlurred.height - y - (saftyOffset/2)
+						}
+						
+						it.blurBitmap = Bitmap.createBitmap(
+							bitmapBlurred,
+							x,
+							y,
+							width,
+							height
+						)
+					}
 				invalidate()
 			}
 		}
@@ -151,22 +174,38 @@ class BlurImageView @JvmOverloads constructor(
 		return true
 	}
 	
+	fun getBoundSafeCoord(point: PointF): PointF{
+		val safetyOffset = 2
+		var x = point.x
+		
+		if( x < bitmapBounds.left - safetyOffset){
+			x = (bitmapBounds.left+safetyOffset).toFloat()
+		} else if(x > bitmapBounds.right - safetyOffset ){
+			x = (bitmapBounds.right - safetyOffset).toFloat()
+		}
+		
+		var y = point.y
+		if( y + bitmapBounds.top >= bitmapBlurred.height - blurLineHeight - safetyOffset){
+			y = bitmapBlurred.height - blurLineHeight/2 - safetyOffset
+		} else if(y < safetyOffset) {
+			y = safetyOffset.toFloat()
+		}
+		return PointF(x,y)
+	}
+	
 	override fun scrollStarted(e: MotionEvent) {
-		val coords = getPointerCoords(e)
-		if(coords.x > bitmapBounds.right || coords.x > bitmapBlurred.width) return
+		val coords = getBoundSafeCoord(getPointerCoords(e))
+		
 		lines.add(BlurLine(
-			PointF(coords.x,coords.y),
+			PointF(coords.x, coords.y),
 			PointF(coords.x, coords.y)
 		))
 		
 	}
 	
 	override fun scrollMoved(e1: MotionEvent, e2: MotionEvent) {
-		val current = getPointerCoords(e2)
+		val current = getBoundSafeCoord(getPointerCoords(e2))
 		val line = lines.last()
-		
-		if(current.x > bitmapBounds.right || current.x > bitmapBlurred.width) return
-		
 		line.p2.x = current.x
 		invalidate()
 	}
