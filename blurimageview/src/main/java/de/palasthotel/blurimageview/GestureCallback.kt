@@ -1,4 +1,4 @@
-package de.palasthotel.cropimageview
+package de.palasthotel.blurimageview
 
 import android.view.MotionEvent
 

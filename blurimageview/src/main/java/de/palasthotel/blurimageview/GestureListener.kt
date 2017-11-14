@@ -1,6 +1,5 @@
-package de.palasthotel.cropimageview
+package de.palasthotel.blurimageview
 
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 
