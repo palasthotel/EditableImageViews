@@ -101,8 +101,6 @@ class BlurImageView @JvmOverloads constructor(
 	fun setHistory(history: List<BlurLine>) {
 		lines.clear()
 		lines.addAll(history)
-		invalidatePixelation()
-		invalidate()
 	}
 	
 	fun getHistory(): List<BlurLine> {
