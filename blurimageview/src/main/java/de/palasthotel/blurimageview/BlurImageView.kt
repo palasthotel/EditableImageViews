@@ -101,6 +101,7 @@ class BlurImageView @JvmOverloads constructor(
 	fun setHistory(history: List<BlurLine>) {
 		lines.clear()
 		lines.addAll(history)
+		invalidatePixelation()
 		invalidate()
 	}
 	
@@ -130,48 +131,52 @@ class BlurImageView @JvmOverloads constructor(
 	override fun onTouchEvent(event: MotionEvent): Boolean {
 		when (event.action) {
 			MotionEvent.ACTION_UP -> {
-				lines
-					.filter { !it.hasBlurBitmap }
-					.forEach {
-						val saftyOffset = 5
-						var x = it.x.toInt()
-						var y = (it.y.toInt() - (blurPreviewPaint.strokeWidth / 2f)).toInt()
-						var width = it.width.toInt()
-						var height = blurPreviewPaint.strokeWidth.toInt()
-						
-						if(x+saftyOffset > bitmapBlurred.width){
-							x = bitmapBlurred.width - saftyOffset/2
-						} else if(x < 0){
-							x = saftyOffset/2
-						}
-						
-						if( x + width + saftyOffset > bitmapBlurred.width){
-							width = bitmapBlurred.width - x - saftyOffset
-						}
-						
-						if(y+ saftyOffset > bitmapBlurred.height){
-							y = bitmapBlurred.height - saftyOffset/2
-						} else if(y < 0){
-							y = saftyOffset/2
-						}
-						
-						if(y + height + saftyOffset > bitmapBlurred.height){
-							height = bitmapBlurred.height - y - (saftyOffset/2)
-						}
-						
-						it.blurBitmap = Bitmap.createBitmap(
-							bitmapBlurred,
-							x,
-							y,
-							width,
-							height
-						)
-					}
+				invalidatePixelation()
 				invalidate()
 			}
 		}
 		scrollDetector.onTouchEvent(event)
 		return true
+	}
+	
+	fun invalidatePixelation(){
+		lines
+			.filter { !it.hasBlurBitmap }
+			.forEach {
+				val saftyOffset = 5
+				var x = it.x.toInt()
+				var y = (it.y.toInt() - (blurPreviewPaint.strokeWidth / 2f)).toInt()
+				var width = it.width.toInt()
+				var height = blurPreviewPaint.strokeWidth.toInt()
+				
+				if(x+saftyOffset > bitmapBlurred.width){
+					x = bitmapBlurred.width - saftyOffset/2
+				} else if(x < 0){
+					x = saftyOffset/2
+				}
+				
+				if( x + width + saftyOffset > bitmapBlurred.width){
+					width = bitmapBlurred.width - x - saftyOffset
+				}
+				
+				if(y+ saftyOffset > bitmapBlurred.height){
+					y = bitmapBlurred.height - saftyOffset/2
+				} else if(y < 0){
+					y = saftyOffset/2
+				}
+				
+				if(y + height + saftyOffset > bitmapBlurred.height){
+					height = bitmapBlurred.height - y - (saftyOffset/2)
+				}
+				
+				it.blurBitmap = Bitmap.createBitmap(
+					bitmapBlurred,
+					x,
+					y,
+					width,
+					height
+				)
+			}
 	}
 	
 	fun getBoundSafeCoord(point: PointF): PointF{
