@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context="de.palasthotel.imageviewsexample.CropActivity"
+	>
+
+
+	<LinearLayout
+		android:layout_margin="30dp"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_centerInParent="true"
+		>
+		<de.palasthotel.blurimageview.BlurImageView
+			android:id="@+id/imageview"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/colorAccent"
+			/>
+		<ImageView
+			android:id="@+id/imageview_result"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/background"
+
+			android:visibility="gone"
+			/>
+	</LinearLayout>
+
+
+	<Button
+		android:id="@+id/save"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Switch"
+		/>
+	<Button
+		android:id="@+id/undo"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Undo"
+		/>
+	<Button
+		android:id="@+id/ratio"
+		android:layout_centerHorizontal="true"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Ratio"/>
+
+</RelativeLayout>

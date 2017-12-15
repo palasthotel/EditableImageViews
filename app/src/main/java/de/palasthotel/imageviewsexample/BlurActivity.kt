@@ -9,16 +9,17 @@ import android.widget.Toast
 import de.palasthotel.blurimageview.BlurImageView
 import de.palasthotel.blurimageview.BlurLine
 
-class MainActivity : AppCompatActivity() {
+class BlurActivity : AppCompatActivity() {
 	
 	val lines = arrayListOf<BlurLine>()
+	var activeDrawable = R.drawable.ultra_high
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_main)
+		setContentView(R.layout.activity_blur)
 		
 		val blur: BlurImageView = findViewById(R.id.imageview)
-		blur.setImageDrawable(getDrawable(R.drawable.lorempixel))
+		blur.setImageDrawable(resources.getDrawable(activeDrawable))
 		
 		val image = findViewById<ImageView>(R.id.imageview_result)
 		image.visibility = View.GONE
@@ -47,6 +48,17 @@ class MainActivity : AppCompatActivity() {
 			blur.undo()
 		}
 		
-		findViewById<ImageView>(R.id.imageview).setImageDrawable(getDrawable(R.drawable.lorempixel))
+		findViewById<Button>(R.id.ratio).setOnClickListener {
+			blur.setHistory(emptyList())
+			lines.clear()
+			activeDrawable = when(activeDrawable){
+				R.drawable.lorempixel -> R.drawable.ultra_high
+				R.drawable.ultra_high -> R.drawable.flat
+				else -> R.drawable.lorempixel
+			}
+			blur.setImageDrawable(resources.getDrawable(activeDrawable))
+			blur.reset()
+		}
+		
 	}
 }

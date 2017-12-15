@@ -3,6 +3,7 @@ package de.palasthotel.cropimageview
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.GestureDetector
@@ -31,6 +32,8 @@ class ImageCropView @JvmOverloads constructor(
 	private var topHandleHeight: Int = -60
 	private var bottomHandleHeight: Int = -60
 	
+	val minHeight = 100
+	
 	init {
 		
 		imageView = mainView.findViewById(R.id.imageView)
@@ -49,6 +52,9 @@ class ImageCropView @JvmOverloads constructor(
 		gestureDetector = GestureDetector(context, GestureListener(this))
 	}
 	
+	fun setImageDrawable(drawable: Drawable){
+		imageView.setImageDrawable(drawable)
+	}
 	fun setBitmap(image: Bitmap) {
 		imageView.setImageBitmap(image)
 	}

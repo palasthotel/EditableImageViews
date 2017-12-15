@@ -77,14 +77,22 @@ class BlurImageView @JvmOverloads constructor(
 			if (it.hasBlurBitmap) {
 				canvas.drawBitmap(
 					it.blurBitmap,
-					it.x + bitmapBounds.left,
-					it.y + bitmapBounds.top - blurPreviewPaint.strokeWidth/2,
+					it.x,
+					it.y - blurPreviewPaint.strokeWidth/2,
 					null
 				)
 			} else {
 				it.draw(canvas, blurPreviewPaint)
 			}
 		}
+	}
+	
+	fun reset(){
+		_bitmapBlurred = null
+		_bitmapBounds = null
+		lines.clear()
+		invalidatePixelation()
+		invalidate()
 	}
 	
 	val canUndo: Boolean
@@ -141,30 +149,31 @@ class BlurImageView @JvmOverloads constructor(
 		lines
 			.filter { !it.hasBlurBitmap }
 			.forEach {
-				val saftyOffset = 5
-				var x = it.x.toInt()
-				var y = (it.y.toInt() - (blurPreviewPaint.strokeWidth / 2f)).toInt()
+				val safetyOffset = 5
+				// x and y in bitmap without bounds to imageview
+				var x = it.x.toInt() - (_bitmapBounds?.left ?: 0)
+				var y = (it.y.toInt() - (blurPreviewPaint.strokeWidth / 2f)).toInt() - (_bitmapBounds?.top ?: 0)
 				var width = it.width.toInt()
 				var height = blurPreviewPaint.strokeWidth.toInt()
 				
-				if(x+saftyOffset > bitmapBlurred.width){
-					x = bitmapBlurred.width - saftyOffset/2
+				if(x+safetyOffset > bitmapBlurred.width){
+					x = bitmapBlurred.width - safetyOffset/2
 				} else if(x < 0){
-					x = saftyOffset/2
+					x = safetyOffset/2
 				}
 				
-				if( x + width + saftyOffset > bitmapBlurred.width){
-					width = bitmapBlurred.width - x - saftyOffset
+				if( x + width + safetyOffset > bitmapBlurred.width){
+					width = bitmapBlurred.width - x - safetyOffset
 				}
 				
-				if(y+ saftyOffset > bitmapBlurred.height){
-					y = bitmapBlurred.height - saftyOffset/2
+				if(y+ safetyOffset > bitmapBlurred.height){
+					y = bitmapBlurred.height - safetyOffset/2
 				} else if(y < 0){
-					y = saftyOffset/2
+					y = safetyOffset/2
 				}
 				
-				if(y + height + saftyOffset > bitmapBlurred.height){
-					height = bitmapBlurred.height - y - (saftyOffset/2)
+				if(y + height + safetyOffset > bitmapBlurred.height){
+					height = bitmapBlurred.height - y - (safetyOffset/2)
 				}
 				
 				it.blurBitmap = Bitmap.createBitmap(
@@ -188,11 +197,12 @@ class BlurImageView @JvmOverloads constructor(
 		}
 		
 		var y = point.y
-		if( y + bitmapBounds.top >= bitmapBlurred.height - blurLineHeight - safetyOffset){
-			y = bitmapBlurred.height - blurLineHeight/2 - safetyOffset
-		} else if(y < safetyOffset) {
-			y = safetyOffset.toFloat()
+		if(y < bitmapBounds.top - safetyOffset){
+			y = (bitmapBounds.top + safetyOffset).toFloat()
+		} else if( y > bitmapBounds.bottom - safetyOffset ){
+			y = (bitmapBounds.bottom - safetyOffset).toFloat()
 		}
+		
 		return PointF(x,y)
 	}
 	
