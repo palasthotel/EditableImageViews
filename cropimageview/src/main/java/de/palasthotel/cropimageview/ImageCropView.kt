@@ -10,6 +10,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+
 import android.widget.ImageView
 import palasthotel.de.cropimageview.R
 
@@ -17,7 +18,8 @@ class ImageCropView @JvmOverloads constructor(
 	context: Context,
 	attrs: AttributeSet? = null,
 	defStyle: Int = 0,
-	defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyle, defStyleRes), GestureCallback {
+	defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyle), GestureCallback {
+	
 	
 	companion object {
 		private val GRABBER_HIT_AREA = 20

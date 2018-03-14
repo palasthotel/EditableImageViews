@@ -15,7 +15,7 @@ class BlurImageView @JvmOverloads constructor(
 	attrs: AttributeSet? = null,
 	defStyle: Int = 0,
 	defStyleRes: Int = 0) :
-	ImageView(context, attrs, defStyle, defStyleRes), GestureCallback {
+	ImageView(context, attrs, defStyle), GestureCallback {
 	
 	val blurPreviewPaint = Paint()
 	
@@ -176,13 +176,18 @@ class BlurImageView @JvmOverloads constructor(
 					height = bitmapBlurred.height - y - (safetyOffset/2)
 				}
 				
-				it.blurBitmap = Bitmap.createBitmap(
-					bitmapBlurred,
-					x,
-					y,
-					width,
-					height
-				)
+				try {
+					it.blurBitmap = Bitmap.createBitmap(
+						bitmapBlurred,
+						x,
+						y,
+						width,
+						height
+					)
+				} catch (e: Exception){
+					e.printStackTrace()
+				}
+				
 			}
 	}
 	

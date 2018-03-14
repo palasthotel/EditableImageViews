@@ -1,7 +1,8 @@
 package de.palasthotel.imageviewsexample
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -19,7 +20,7 @@ class BlurActivity : AppCompatActivity() {
 		setContentView(R.layout.activity_blur)
 		
 		val blur: BlurImageView = findViewById(R.id.imageview)
-		blur.setImageDrawable(resources.getDrawable(activeDrawable))
+		blur.setImageDrawable(ContextCompat.getDrawable(this, activeDrawable))
 		
 		val image = findViewById<ImageView>(R.id.imageview_result)
 		image.visibility = View.GONE
@@ -56,7 +57,7 @@ class BlurActivity : AppCompatActivity() {
 				R.drawable.ultra_high -> R.drawable.flat
 				else -> R.drawable.lorempixel
 			}
-			blur.setImageDrawable(resources.getDrawable(activeDrawable))
+			blur.setImageDrawable(ContextCompat.getDrawable(this, activeDrawable))
 			blur.reset()
 		}
 		

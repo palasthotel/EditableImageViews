@@ -6,31 +6,47 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context="de.palasthotel.imageviewsexample.CropActivity"
-	android:layout_margin="30dp">
+	>
 
 
-	<de.palasthotel.cropimageview.ImageCropView
-		android:id="@+id/imageview"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+	<LinearLayout
 		android:layout_centerInParent="true"
-	    android:background="@color/colorAccent"
-		/>
-
-	<ImageView
-		android:id="@+id/imageview_result"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@color/background"
-	    android:layout_centerInParent="true"
-	    android:visibility="gone"
-		/>
+		android:layout_margin="30dp"
+	    android:orientation="vertical"
+		>
+		<de.palasthotel.cropimageview.ImageCropView
+			android:id="@+id/imageview"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_centerInParent="true"
+			android:background="@color/colorAccent"
+			/>
+
+		<ImageView
+			android:id="@+id/imageview_result"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/background"
+			android:layout_centerInParent="true"
+			android:visibility="gone"
+			/>
+	</LinearLayout>
+
 
 	<Button
 		android:id="@+id/save"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Switch"
+		android:text="Save"
 		/>
+
+	<Button
+		android:id="@+id/ratio"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Ratio"/>
 
 </RelativeLayout>

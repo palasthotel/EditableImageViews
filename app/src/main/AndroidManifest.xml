@@ -9,6 +9,7 @@
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme">
+
 		<activity
 			android:name="de.palasthotel.imageviewsexample.BlurActivity"
 			android:label="Blur Editor"
@@ -19,9 +20,10 @@
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
+
 		<activity
 			android:name="de.palasthotel.imageviewsexample.CropActivity"
-		    android:label="Crop Editor"
+			android:label="Crop Editor"
 			>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
@@ -29,6 +31,9 @@
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
+
+
+
 
 	</application>
 
