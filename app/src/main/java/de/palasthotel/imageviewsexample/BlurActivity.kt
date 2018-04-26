@@ -19,13 +19,15 @@ class BlurActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_blur)
 		
+		val storage = FileStorage(this)
+		
 		val blur: BlurImageView = findViewById(R.id.imageview)
 		blur.setImageDrawable(ContextCompat.getDrawable(this, activeDrawable))
 		
 		val image = findViewById<ImageView>(R.id.imageview_result)
 		image.visibility = View.GONE
 		
-		findViewById<Button>(R.id.save).setOnClickListener{
+		findViewById<Button>(R.id.switchit).setOnClickListener{
 			
 			Toast.makeText(this, "Switched", Toast.LENGTH_SHORT).show()
 			if(image.visibility != View.VISIBLE){
@@ -59,6 +61,10 @@ class BlurActivity : AppCompatActivity() {
 			}
 			blur.setImageDrawable(ContextCompat.getDrawable(this, activeDrawable))
 			blur.reset()
+		}
+		
+		findViewById<Button>(R.id.save).setOnClickListener{
+			storage.saveImage("blurred.jpg", blur.getBlurredBitmap())
 		}
 		
 	}

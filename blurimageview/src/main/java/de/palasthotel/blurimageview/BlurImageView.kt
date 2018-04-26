@@ -13,11 +13,12 @@ import nl.dionsegijn.pixelate.Pixelate
 class BlurImageView @JvmOverloads constructor(
 	context: Context,
 	attrs: AttributeSet? = null,
-	defStyle: Int = 0,
-	defStyleRes: Int = 0) :
+	defStyle: Int = 0
+) :
 	ImageView(context, attrs, defStyle), GestureCallback {
 	
 	val blurPreviewPaint = Paint()
+	val safetyOffset = 2
 	
 	// private variables
 	private var scrollDetector: GestureDetector = GestureDetector(context, GestureListener(this))
@@ -72,7 +73,7 @@ class BlurImageView @JvmOverloads constructor(
 	
 	override fun onDraw(canvas: Canvas) {
 		super.onDraw(canvas)
-		bitmapBlurred
+		
 		lines.forEach {
 			if (it.hasBlurBitmap) {
 				canvas.drawBitmap(
@@ -123,7 +124,13 @@ class BlurImageView @JvmOverloads constructor(
 	fun getBlurredBitmap(): Bitmap {
 		buildDrawingCache()
 		val cache = getDrawingCache(true)
-		val bitmap = Bitmap.createBitmap(cache)
+		val bitmap = Bitmap.createBitmap(
+			cache,
+			bitmapBounds.left+1,
+			bitmapBounds.top+1,
+			bitmapBounds.right-bitmapBounds.left-1,
+			bitmapBounds.bottom-bitmapBounds.top-1
+		)
 		destroyDrawingCache()
 		return bitmap
 	}
@@ -192,7 +199,7 @@ class BlurImageView @JvmOverloads constructor(
 	}
 	
 	fun getBoundSafeCoord(point: PointF): PointF{
-		val safetyOffset = 2
+		
 		var x = point.x
 		
 		if( x < bitmapBounds.left - safetyOffset){

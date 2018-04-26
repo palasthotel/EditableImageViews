@@ -17,8 +17,8 @@ import palasthotel.de.cropimageview.R
 class ImageCropView @JvmOverloads constructor(
 	context: Context,
 	attrs: AttributeSet? = null,
-	defStyle: Int = 0,
-	defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyle), GestureCallback {
+	defStyle: Int = 0
+) : FrameLayout(context, attrs, defStyle), GestureCallback {
 	
 	
 	companion object {
